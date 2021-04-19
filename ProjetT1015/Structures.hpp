@@ -70,7 +70,6 @@ public:
     void movePiece(Position newPos, Piece* piece);
     void addPieceBoard(Piece* piece);
     void addPiece(ChessPiece piece, Position pos, Color col);
-    
     Piece* operator[](Position position) {
         return squares[position.x][position.y];
     };
@@ -93,6 +92,7 @@ public:
 
     virtual bool isMoveValid(Position newPos, Board board) = 0;
     virtual ~Piece() = default;
+  
 };
 
 
@@ -104,6 +104,8 @@ public:
     ~King();
     static int kingCount;
     bool isMoveValid(Position newPos, Board board) override;
+    friend Board;
+private:
     King(Position pos, Color col);
   
 };
