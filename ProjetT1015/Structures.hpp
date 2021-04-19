@@ -36,6 +36,8 @@ const int NUMBER_OF_EXCEPTIONS = 1;
 
 enum class Color { Black, White };
 
+enum class ChessPiece {King, Rook, Bishop};
+
 
 struct Position {
     int x;
@@ -67,8 +69,7 @@ public:
     Piece* squares[nSquares][nSquares];
     void movePiece(Position newPos, Piece* piece);
     void addPiece(Piece* piece);
-
-
+    
     Piece* operator[](Position position) {
         return squares[position.x][position.y];
     };
@@ -98,11 +99,14 @@ class King :public Piece
 {
 public:
     const char kingPieceType = 'K';
-   
-    King(Position pos, Color col);
+    
+    static King* addKing(Position pos, Color col);
     ~King();
-    static size_t kingCount;
+    
     bool isMoveValid(Position newPos, Board board) override;
+private:
+    static int kingCount;
+    King(Position pos, Color col);
 };
 
 

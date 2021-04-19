@@ -8,7 +8,7 @@
 
 #include "Structures.hpp"
 
-size_t King::kingCount = 0;
+int King::kingCount = 0;
 
 Board::Board() {
     for (int xPosition : range(nSquares)) {
@@ -28,7 +28,9 @@ void Board::movePiece(Position newPos, Piece* piece) {
     }
 }
 
+
 void Board::addPiece(Piece* piece) {
+
     if ((*this)[(*piece).position] == nullptr) {
         squares[(*piece).position.x][(*piece).position.y] = piece;
     }
@@ -58,23 +60,30 @@ void Piece::impossibleMove(ImpossibleMoves imposMove, char pieceType) {
 }
 
 
-King::King(Position pos, Color col) : Piece(pos, col, kingPieceType) {
+King* King::addKing(Position pos, Color col) {
+    kingCount++;
     try {
-        if (kingCount < 2) {
+        if (kingCount <= 2) {
             kingCount++;
+            King king = King(pos, col);
+            return &king;
         }
         else
         {
-            throw 999;
+            throw 69;
         }
     }
     catch (int exception) {
-        cout << "Error: " << exception << ": Too many kings in your kingdom ;)." <<endl;
-        
+        cout << "Error: " << exception << ": Too many kings in your kingdom ;)." << endl;
+        return nullptr;
     }
 };
+
+King::King(Position pos, Color col) : Piece(pos, col, kingPieceType) {};
 King::~King() {
+    
     --kingCount;
+
 };
 
 bool King::isMoveValid(Position newPos, Board board) {

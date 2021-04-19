@@ -66,12 +66,25 @@ int main(int argc, char* argv[]) {
 	Color white = Color::White;
 	Color black = Color::Black;
 
-	King wKing = King(pos1, white);
+	//King wKing = King(pos1, white);
 
-	King bKing = King(pos2, black);
+	//King bKing = King(pos2, black);
 
-	King nKing = King(pos3, white);
+	//King nKing = King(pos3, black);
 
+	King* wKing = King::addKing(pos1, white);
+
+	King* bKing = King::addKing(pos2, black);
+
+	King* nKing = King::addKing(pos3, white);
+
+
+
+	//Board board = Board();
+
+	//string king = "kingTest";
+
+	//board.addPiece(king, ChessPiece::King, pos1, white);
 	
 
 	QApplication a(argc, argv);
