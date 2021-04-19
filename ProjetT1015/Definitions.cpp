@@ -29,7 +29,43 @@ void Board::movePiece(Position newPos, Piece* piece) {
 }
 
 
-void Board::addPiece(Piece* piece) {
+void Board::addPiece(ChessPiece piece, Position pos, Color col) {
+    switch (piece) {
+        case ChessPiece::King:
+            try {
+                if (King::kingCount < 2) {
+                    King* king = new King(pos, col);
+                    this->addPieceBoard(king);
+                }
+                else
+                {
+                    throw 69;
+                }
+            }
+            catch (int exception) {
+                cout << "Error: " << exception << ": Too many kings in your kingdom ;)." << endl;
+            }
+            break;
+
+        case ChessPiece::Bishop:
+            {
+                Bishop* bishop = new Bishop(pos, col);
+                this->addPieceBoard(bishop); 
+            }
+            break;
+
+        case ChessPiece::Rook:
+            {
+                Rook* rook = new Rook(pos, col);
+                this->addPieceBoard(rook);
+            }
+            break;
+    }
+
+};
+
+
+void Board::addPieceBoard(Piece* piece) {
 
     if ((*this)[(*piece).position] == nullptr) {
         squares[(*piece).position.x][(*piece).position.y] = piece;
@@ -60,30 +96,11 @@ void Piece::impossibleMove(ImpossibleMoves imposMove, char pieceType) {
 }
 
 
-King* King::addKing(Position pos, Color col) {
+King::King(Position pos, Color col) : Piece(pos, col, kingPieceType) {
     kingCount++;
-    try {
-        if (kingCount <= 2) {
-            kingCount++;
-            King king = King(pos, col);
-            return &king;
-        }
-        else
-        {
-            throw 69;
-        }
-    }
-    catch (int exception) {
-        cout << "Error: " << exception << ": Too many kings in your kingdom ;)." << endl;
-        return nullptr;
-    }
 };
-
-King::King(Position pos, Color col) : Piece(pos, col, kingPieceType) {};
 King::~King() {
-    
     --kingCount;
-
 };
 
 bool King::isMoveValid(Position newPos, Board board) {

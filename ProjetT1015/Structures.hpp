@@ -68,7 +68,8 @@ public:
     ~Board() = default;
     Piece* squares[nSquares][nSquares];
     void movePiece(Position newPos, Piece* piece);
-    void addPiece(Piece* piece);
+    void addPieceBoard(Piece* piece);
+    void addPiece(ChessPiece piece, Position pos, Color col);
     
     Piece* operator[](Position position) {
         return squares[position.x][position.y];
@@ -99,14 +100,12 @@ class King :public Piece
 {
 public:
     const char kingPieceType = 'K';
-    
-    static King* addKing(Position pos, Color col);
+
     ~King();
-    
-    bool isMoveValid(Position newPos, Board board) override;
-private:
     static int kingCount;
+    bool isMoveValid(Position newPos, Board board) override;
     King(Position pos, Color col);
+  
 };
 
 
