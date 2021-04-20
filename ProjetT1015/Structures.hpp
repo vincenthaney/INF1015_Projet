@@ -107,7 +107,6 @@ public:
     friend Board;
 private:
     King(Position pos, Color col);
-  
 };
 
 
