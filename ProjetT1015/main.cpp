@@ -61,9 +61,10 @@ int main(int argc, char* argv[]) {
 	//return RUN_ALL_TESTS();
 
 
-	Position pos1 = Position(1, 1);
-	Position pos2 = Position(1, 2);
-	Position pos3 = Position(2, 1);
+	Position pos1 = Position(2, 2);
+	Position pos2 = Position(3, 3);
+	Position pos3 = Position(1, 1);
+	Position pos4 = Position(2, 1);
 	Color white = Color::White;
 	Color black = Color::Black;
 
@@ -81,17 +82,33 @@ int main(int argc, char* argv[]) {
 
 
 
-	//Board board = Board();
+	Board board1 = Board();
 
-	//board.addPiece(ChessPiece::King, pos1, white);
-	//board.addPiece(ChessPiece::King, pos2, white);
-	//board.addPiece(ChessPiece::King, pos3, white);
+	board1.addPiece(ChessPiece::King, pos3, white);
+	board1.addPiece(ChessPiece::Bishop, pos2, black);
+	board1.addPiece(ChessPiece::Rook, pos1, white);
 
-	QApplication a(argc, argv);
-	ChessWindow w;
-	w.show();
-	return a.exec();
-	//board.movePiece(pos3, board.squares[1][1]);
+	//QApplication a(argc, argv);
+	//ChessWindow w;
+	//w.show();
+	//return a.exec();
+	
+	cout << "Deplacement d'une piece qui defendait le roi" << endl;
+	board1.movePiece(pos4, board1.squares[2][2]);
+
+	Board board2 = Board();
+
+	pos1 = Position(4, 0);
+	pos2 = Position(3, 2);
+	pos3 = Position(2, 2);
+	pos4 = Position(5, 1);
+
+	board2.addPiece(ChessPiece::King, pos3, white);
+	board2.addPiece(ChessPiece::Bishop, pos4, black);
+	board2.addPiece(ChessPiece::Rook, pos2, white);
+
+	cout << "Deplacement d'une piece pour mettre en echec le roi" << endl;
+	board2.movePiece(pos1, board2.squares[5][1]);
 
 	//auto* king = board.getPiece(pos3);
 

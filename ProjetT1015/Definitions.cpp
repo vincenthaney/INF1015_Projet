@@ -17,6 +17,17 @@ Board::Board() {
         }
     }
 };
+
+
+Board::Board(const Board& board){
+    for (int xPosition : range(nSquares)) {
+        for (int yPosition : range(nSquares)) {
+            squares[xPosition][yPosition] = board.squares[xPosition][yPosition];
+        }
+    }
+}
+
+
 Board::~Board() {
     for (int xPosition : range(nSquares)) {
         for (int yPosition : range(nSquares)) {
@@ -24,7 +35,6 @@ Board::~Board() {
                delete squares[xPosition][yPosition];
                squares[xPosition][yPosition] = nullptr;
             }
-            
         }
     }
 }
@@ -32,10 +42,19 @@ Board::~Board() {
 void Board::movePiece(Position newPos, Piece* piece) {
 
     if (piece->isMoveValid(newPos, (*this))) {
+        delete squares[newPos.x][newPos.y];
         squares[newPos.x][newPos.y] = piece;
         squares[piece->position.x][piece->position.y] = nullptr;
+        pair<int, int> tempPos(piece->position.x, piece->position.y);
         (*piece).position.x = newPos.x;
         (*piece).position.y = newPos.y;
+        piece->isTest = true;
+        if (isKingCheck(piece->color).first) {
+            squares[tempPos.first][tempPos.second] = piece;
+            squares[newPos.x][newPos.y] = nullptr;
+            piece->impossibleMove(Piece::ImpossibleMoves::checkedKing,'K');
+        }
+        piece->isTest = false;
     }
 }
 
@@ -72,7 +91,6 @@ void Board::addPiece(ChessPiece piece, Position pos, Color col) {
             }
             break;
     }
-
 };
 
 
@@ -88,38 +106,58 @@ void Board::addPieceBoard(Piece* piece) {
 }
 
 
-vector<Position> Board::hasKings() {
-    vector<Position> tempVect;
+vector<pair<Position, Color>> Board::hasKings() {
+    vector<pair<Position,Color>> tempVect;
     for (int i : range(nSquares)) {
         for (int j : range(nSquares)) {
-            if (typeid(squares[i][j]) == typeid(King)) {
+            if (dynamic_cast<King*>(squares[i][j]) != NULL) {
                 Position posTemp = Position(i, j);
-                tempVect.push_back(posTemp);
+                Color colorTemp = squares[i][j]->color;
+                pair tempPair(posTemp, colorTemp);
+                tempVect.push_back(tempPair);
             }
-
         }
     }
+    return tempVect;
 }
 
 
-bool Board::isKingCheck(Position kingPos) {
-
-    for (int k : range(nSquares)) {
-        for (int p : range(nSquares)) {
-            if (typeid(squares[k][p]) == typeid(Piece)) {
-                if (squares[k][p]->isMoveValid(kingPos, (*this))) {
-                    return true;
+pair<bool,bool> Board::isKingCheck(Color pieceColor) {
+    vector<pair<Position, Color>> kingPosVect = hasKings();
+    pair<bool, bool> tempPair(false, false);
+    if ( kingPosVect.size() > 0) {
+        for (int k : range(kingPosVect.size())) {
+            for (int i : range(nSquares)) {
+                for (int j : range(nSquares)) {
+                    bool isKingPos = (kingPosVect[k].first.x == i && kingPosVect[k].first.y == j);
+                    if (!isKingPos) {
+                        if (squares[i][j] != nullptr) {
+                            if ((squares[i][j]->isMoveValid(kingPosVect[k].first, (*this)))) {
+                                if(squares[i][j]->color != kingPosVect[k].second){
+                                    if(kingPosVect[k].second != pieceColor)
+                                    tempPair.second = true;
+                                    else {
+                                        tempPair.first = true;
+                                        return tempPair;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+    return tempPair;
 
+    
 }
 
 
 Piece* Board::getPiece(Position pos) {
     return this->squares[pos.x][pos.y];
 };
+
 
 Piece::Piece(Position pos, Color col, char pType) : color(col), position(pos), pieceType(pType) {};
 
@@ -134,6 +172,9 @@ void Piece::impossibleMove(ImpossibleMoves imposMove, char pieceType) {
         break;
     case pieceAlreadyThere:
         cout << "A piece is already at the given destination." << endl;
+        break;
+    case checkedKing:
+        cout << "Cannot move there. Your king would be in check." << endl;
         break;
     default:
         break;
@@ -153,24 +194,30 @@ King::~King() {
 
 bool King::isMoveValid(Position newPos, Board& board) {
 
+
     int deltaX = newPos.x - position.x;
     int deltaY = newPos.y - position.y;
     bool isPositionValid = (abs(deltaX) == 1) || (abs(deltaY) == 1);
 
-    if (isPositionValid) {
+    if (!isPositionValid) {
         if (board[newPos] == nullptr) {
             isPieceMoved = true;
             return isPieceMoved;
         }
         else
         {
-            impossibleMove(pieceBlock, pieceType);
+            if (isTest == false) {
+                impossibleMove(pieceBlock, pieceType);
+            }
+            
         }
     }
     else
     {
         impossibleMove(wrongMove, pieceType);
     }
+
+
     isPieceMoved = false;
 }
 char King::getPieceType() {
@@ -178,6 +225,7 @@ char King::getPieceType() {
 }
 
 Rook::Rook(Position pos, Color col) : Piece(pos, col, rookPieceType) {};
+
 
 bool Rook::isMoveValid(Position newPos, Board& board) {
 
@@ -227,14 +275,21 @@ bool Rook::isMoveValid(Position newPos, Board& board) {
         for (iterStart; iterStart <= iterEnd; iterStart++) {
             startPosition.x += iterX;
             startPosition.y += iterY;
+            
             if (board[startPosition] != nullptr) {
-                impossibleMove(pieceBlock, pieceType);
+                bool isEnemyPieceAtEndPos = (iterStart == iterEnd) && (board[startPosition]->color != color);
+                if (isEnemyPieceAtEndPos) {
+                    isPieceMoved = true;
+                }
+                if (isTest == false) {
+                    impossibleMove(pieceBlock, pieceType);
+                    isPieceMoved = false;
+                    return isPieceMoved;
+                }
                 isPieceMoved = false;
                 return isPieceMoved;
             }
         }
-        isPieceMoved = true;
-        return isPieceMoved;
     }
     else
     {
@@ -242,7 +297,7 @@ bool Rook::isMoveValid(Position newPos, Board& board) {
     }
 }
 
-char Rook::getPieceType() {
+char Bishop::getPieceType() {
     return pieceType;
 }
 
@@ -289,7 +344,11 @@ bool Bishop::isMoveValid(Position newPos, Board& board) {
             startPosition.x += iterX;
             startPosition.y += iterY;
             if (board[startPosition] != nullptr) {
-                impossibleMove(pieceBlock, pieceType);
+                if (isTest == false) {
+                    impossibleMove(pieceBlock, pieceType);
+                    isPieceMoved = false;
+                    return isPieceMoved;
+                }
                 isPieceMoved = false;
                 return isPieceMoved;
             }

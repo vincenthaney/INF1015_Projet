@@ -25,6 +25,7 @@
 #include <qapplication.h>
 #include <QGridLayout>
 #include <vector>
+#include <iterator>
 
 
 using namespace std;
@@ -38,7 +39,7 @@ class Piece;
 const int nSquares = 8;
 const int NUMBER_OF_EXCEPTIONS = 1;
 
-enum class Color { Black, White };
+enum class Color { Black, White};
 
 enum class ChessPiece { King, Rook, Bishop };
 
@@ -69,13 +70,14 @@ class Board//:public QGridLayout
 {
 public:
     Board();
+    Board(const Board& board);
     ~Board();
     Piece* squares[nSquares][nSquares];
     void movePiece(Position newPos, Piece* piece);
-    bool isKingCheck(Position kingPos);
+    pair<bool, bool>  isKingCheck(Color col);
     void addPieceBoard(Piece* piece);
     void addPiece(ChessPiece piece, Position pos, Color col);
-    vector<Position> hasKings();
+    vector<pair<Position, Color>> hasKings();
     Piece* getPiece(Position pos);
     Piece* operator[](Position position) {
         return squares[position.x][position.y];
@@ -91,13 +93,14 @@ public:
     Position position;
     char pieceType = '%';
     bool isPieceMoved = false;
+    bool isTest = false;
     Piece(Position pos, Color col, char pType);
 
-    enum ImpossibleMoves { wrongMove, pieceBlock, pieceAlreadyThere };
+    enum ImpossibleMoves { wrongMove, pieceBlock, pieceAlreadyThere, checkedKing };
     void impossibleMove(ImpossibleMoves imposMove, char pieceType);
     virtual char getPieceType() = 0;
     virtual bool isMoveValid(Position newPos, Board& board) = 0;
-    virtual ~Piece() = default;
+    virtual ~Piece()=default;
 
 };
 
@@ -106,7 +109,6 @@ class King :public Piece
 {
 public:
     const char pieceType = 'K';
-
     ~King();
     static int kingCount;
     bool isMoveValid(Position newPos, Board& board) override;
