@@ -3,7 +3,7 @@
 
 #pragma once
 #include <QMainWindow>
-#include "Structures.hpp"
+#include "Structures.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -18,6 +18,7 @@ public:
     ChessWindow(QWidget *parent = nullptr);
     ~ChessWindow();
 public slots:
+    void fonction(int x, int y);
 
 
 private:

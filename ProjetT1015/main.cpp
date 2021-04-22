@@ -11,7 +11,7 @@
 //#include "Test.cpp"
 #include <qapplication.h>
 #include "mainwindow.h"
-#include "Structures.hpp"
+#include "Structures.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -26,6 +26,7 @@
 #include <cppitertools/range.hpp>
 #include <cppitertools/enumerate.hpp>
 #include <utility>
+
 
 
 #if __has_include("bibliotheque_cours.hpp")
@@ -62,7 +63,7 @@ int main(int argc, char* argv[]) {
 
 	Position pos1 = Position(1, 1);
 	Position pos2 = Position(1, 2);
-	Position pos3 = Position(1, 3);
+	Position pos3 = Position(2, 1);
 	Color white = Color::White;
 	Color black = Color::Black;
 
@@ -80,16 +81,19 @@ int main(int argc, char* argv[]) {
 
 
 
-	Board board = Board();
+	//Board board = Board();
 
-	board.addPiece(ChessPiece::King, pos1, white);
-	board.addPiece(ChessPiece::King, pos2, white);
-	board.addPiece(ChessPiece::King, pos3, white);
+	//board.addPiece(ChessPiece::King, pos1, white);
+	//board.addPiece(ChessPiece::King, pos2, white);
+	//board.addPiece(ChessPiece::King, pos3, white);
 
 	QApplication a(argc, argv);
 	ChessWindow w;
 	w.show();
 	return a.exec();
+	//board.movePiece(pos3, board.squares[1][1]);
 
+	//auto* king = board.getPiece(pos3);
 
+	//cout << king->getPieceType() << endl;
 }

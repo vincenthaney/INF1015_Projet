@@ -6,7 +6,7 @@
 * Créé 01 avril 2021
 */
 
-#include "Structures.hpp"
+#include "Structures.h"
 
 int King::kingCount = 0;
 
@@ -17,9 +17,20 @@ Board::Board() {
         }
     }
 };
+Board::~Board() {
+    for (int xPosition : range(nSquares)) {
+        for (int yPosition : range(nSquares)) {
+            if (squares[xPosition][yPosition] != nullptr) {
+               delete squares[xPosition][yPosition];
+               squares[xPosition][yPosition] = nullptr;
+            }
+            
+        }
+    }
+}
 
 void Board::movePiece(Position newPos, Piece* piece) {
-    (*piece).board = *this;
+
     if (piece->isMoveValid(newPos, (*this))) {
         squares[newPos.x][newPos.y] = piece;
         squares[piece->position.x][piece->position.y] = nullptr;
@@ -76,6 +87,40 @@ void Board::addPieceBoard(Piece* piece) {
     }
 }
 
+
+vector<Position> Board::hasKings() {
+    vector<Position> tempVect;
+    for (int i : range(nSquares)) {
+        for (int j : range(nSquares)) {
+            if (typeid(squares[i][j]) == typeid(King)) {
+                Position posTemp = Position(i, j);
+                tempVect.push_back(posTemp);
+            }
+
+        }
+    }
+}
+
+
+bool Board::isKingCheck(Position kingPos) {
+
+    for (int k : range(nSquares)) {
+        for (int p : range(nSquares)) {
+            if (typeid(squares[k][p]) == typeid(Piece)) {
+                if (squares[k][p]->isMoveValid(kingPos, (*this))) {
+                    return true;
+                }
+            }
+        }
+    }
+
+}
+
+
+Piece* Board::getPiece(Position pos) {
+    return this->squares[pos.x][pos.y];
+};
+
 Piece::Piece(Position pos, Color col, char pType) : color(col), position(pos), pieceType(pType) {};
 
 
@@ -96,14 +141,17 @@ void Piece::impossibleMove(ImpossibleMoves imposMove, char pieceType) {
 }
 
 
-King::King(Position pos, Color col) : Piece(pos, col, kingPieceType) {
+King::King(Position pos, Color col) : Piece(pos, col, pieceType) {
     kingCount++;
 };
+
+
 King::~King() {
     --kingCount;
 };
 
-bool King::isMoveValid(Position newPos, Board board) {
+
+bool King::isMoveValid(Position newPos, Board& board) {
 
     int deltaX = newPos.x - position.x;
     int deltaY = newPos.y - position.y;
@@ -125,10 +173,13 @@ bool King::isMoveValid(Position newPos, Board board) {
     }
     isPieceMoved = false;
 }
+char King::getPieceType() {
+    return pieceType;
+}
 
 Rook::Rook(Position pos, Color col) : Piece(pos, col, rookPieceType) {};
 
-bool Rook::isMoveValid(Position newPos, Board board) {
+bool Rook::isMoveValid(Position newPos, Board& board) {
 
     int deltaX = newPos.x - position.x;
     int deltaY = newPos.y - position.y;
@@ -191,9 +242,13 @@ bool Rook::isMoveValid(Position newPos, Board board) {
     }
 }
 
+char Rook::getPieceType() {
+    return pieceType;
+}
+
 Bishop::Bishop(Position pos, Color col) : Piece(pos, col, bishopPieceType) {};
 
-bool Bishop::isMoveValid(Position newPos, Board board) {
+bool Bishop::isMoveValid(Position newPos, Board& board) {
     int deltaX = newPos.x - position.x;
     int deltaY = newPos.y - position.y;
 
@@ -246,6 +301,10 @@ bool Bishop::isMoveValid(Position newPos, Board board) {
     {
         impossibleMove(wrongMove, pieceType);
     }
+}
+
+char Rook::getPieceType() {
+    return pieceType;
 }
 
 //namespace MovementPieces {
