@@ -45,10 +45,10 @@ enum class ChessPiece { King, Rook, Bishop };
 
 
 struct Position {
-    int x;
-    int y;
+    uint8_t x;
+    uint8_t y;
     Position() = default;
-    Position(int posX, int posY) {
+    Position(uint8_t posX, uint8_t posY) {
 
         bool isPositionValid = (0 <= posX) && (posX < 8) && (0 <= posY) && (posY < 8);
 
@@ -63,15 +63,57 @@ struct Position {
     };
     ~Position() = default;
 
+    bool operator==(const Position& pos) const {
+        if ((this->x == pos.x) && (this->y == pos.y)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 };
 
 
-class Board//:public QGridLayout
+class Board:public QObject
 {
+    Q_OBJECT
 public:
-    Board();
-    Board(const Board& board);
-    ~Board();
+    //Board();
+    //Board(const Board& board);
+    //~Board();
+
+
+    Board() {
+        for (int xPosition : range(nSquares)) {
+            for (int yPosition : range(nSquares)) {
+                squares[xPosition][yPosition] = nullptr;
+            }
+        }
+    };
+
+
+    Board(const Board& board) {
+        for (int xPosition : range(nSquares)) {
+            for (int yPosition : range(nSquares)) {
+                squares[xPosition][yPosition] = board.squares[xPosition][yPosition];
+            }
+        }
+    }
+
+
+    ~Board() {
+        for (int xPosition : range(nSquares)) {
+            for (int yPosition : range(nSquares)) {
+                if (squares[xPosition][yPosition] != nullptr) {
+                    delete squares[xPosition][yPosition];
+                    squares[xPosition][yPosition] = nullptr;
+                }
+            }
+        }
+    }
+
+
     Piece* squares[nSquares][nSquares];
     void movePiece(Position newPos, Piece* piece);
     pair<bool, bool>  isKingCheck(Color col);
@@ -86,14 +128,16 @@ public:
 };
 
 
-class Piece
+class Piece: public QObject
 {
+    Q_OBJECT
 public:
     Color color;
     Position position;
     char pieceType = '%';
     bool isPieceMoved = false;
     bool isTest = false;
+
     Piece(Position pos, Color col, char pType);
 
     enum ImpossibleMoves { wrongMove, pieceBlock, pieceAlreadyThere, checkedKing };
@@ -111,6 +155,7 @@ public:
     const char pieceType = 'K';
     ~King();
     static int kingCount;
+    //bool isKingCheck = false;
     bool isMoveValid(Position newPos, Board& board) override;
     char getPieceType() override;
 

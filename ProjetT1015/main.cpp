@@ -10,7 +10,7 @@
 #pragma once
 //#include "Test.cpp"
 #include <qapplication.h>
-#include "mainwindow.h"
+#include "chesswindow.h"
 #include "Structures.h"
 #include <iostream>
 #include <iomanip>
@@ -61,10 +61,10 @@ int main(int argc, char* argv[]) {
 	//return RUN_ALL_TESTS();
 
 
-	Position pos1 = Position(2, 2);
-	Position pos2 = Position(3, 3);
-	Position pos3 = Position(1, 1);
-	Position pos4 = Position(2, 1);
+	Position pos1 = Position(3, 1);
+	Position pos2 = Position(4, 0);
+	Position pos3 = Position(2, 2);
+	Position pos4 = Position(3, 2);
 	Color white = Color::White;
 	Color black = Color::Black;
 
@@ -82,35 +82,48 @@ int main(int argc, char* argv[]) {
 
 
 
-	Board board1 = Board();
+	//Board board1 = Board();
 
-	board1.addPiece(ChessPiece::King, pos3, white);
-	board1.addPiece(ChessPiece::Bishop, pos2, black);
-	board1.addPiece(ChessPiece::Rook, pos1, white);
+	//board1.addPiece(ChessPiece::King, pos3, white);
+	//board1.addPiece(ChessPiece::Bishop, pos2, black);
+	//board1.addPiece(ChessPiece::Rook, pos1, white);
 
-	//QApplication a(argc, argv);
-	//ChessWindow w;
-	//w.show();
-	//return a.exec();
-	
-	cout << "Deplacement d'une piece qui defendait le roi" << endl;
-	board1.movePiece(pos4, board1.squares[2][2]);
 
-	Board board2 = Board();
+	//
+	//cout << "Deplacement d'une piece qui defendait le roi" << endl;
+	//board1.movePiece(pos4, board1.squares[3][1]);
 
-	pos1 = Position(4, 0);
-	pos2 = Position(3, 2);
-	pos3 = Position(2, 2);
-	pos4 = Position(5, 1);
+	//Board board2 = Board();
 
-	board2.addPiece(ChessPiece::King, pos3, white);
-	board2.addPiece(ChessPiece::Bishop, pos4, black);
-	board2.addPiece(ChessPiece::Rook, pos2, white);
+	//pos1 = Position(4, 0);
+	//pos2 = Position(3, 2);
+	//pos3 = Position(2, 2);
+	//pos4 = Position(5, 1);
 
-	cout << "Deplacement d'une piece pour mettre en echec le roi" << endl;
-	board2.movePiece(pos1, board2.squares[5][1]);
+	//board2.addPiece(ChessPiece::King, pos3, white);
+	//board2.addPiece(ChessPiece::Bishop, pos4, black);
+	//board2.addPiece(ChessPiece::Rook, pos2, white);
 
-	//auto* king = board.getPiece(pos3);
+	//cout << "Deplacement d'une piece pour mettre en echec le roi" << endl;
+	//board2.movePiece(pos1, board2.squares[5][1]);
 
-	//cout << king->getPieceType() << endl;
+	Board board3 = Board();
+
+	//pos1 = Position(7, 7);
+	//pos2 = Position(7, 1);
+	//pos3 = Position(4, 0);
+	//pos4 = Position(5, 1);
+
+	//board3.addPiece(ChessPiece::King, pos1, white);
+	//board3.addPiece(ChessPiece::Bishop, pos4, black);
+	//board3.addPiece(ChessPiece::Rook, pos2, white);
+	//cout << "Deplacement d'une piece sans échec sur le roi" << endl;
+	//board3.movePiece(pos3, board3.squares[5][1]);
+
+
+	QApplication chessGame(argc, argv);
+	ChessGameWindow chess(board3, nullptr);
+	chess.show();
+	return chessGame.exec();
+
 }
